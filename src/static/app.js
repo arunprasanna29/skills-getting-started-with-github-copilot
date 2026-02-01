@@ -5,6 +5,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageDiv = document.getElementById("message");
 
   // Function to fetch activities from API
+
+// Function to unregister a participant
+async function unregisterParticipant(participantId) {
+    try {
+        const response = await fetch(`/unregister/${participantId}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            throw new Error('Failed to unregister participant');
+        }
+        // Refresh the activities list or update UI accordingly
+        fetchActivities();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Add delete icons next to each participant
+function addDeleteIcons() {
+    const participants = document.querySelectorAll('.participant');
+    participants.forEach(participant => {
+        const deleteIcon = document.createElement('span');
+        deleteIcon.innerHTML = '🗑️'; // Unicode for trash can
+        deleteIcon.style.cursor = 'pointer';
+        deleteIcon.addEventListener('click', () => {
+            const participantId = participant.dataset.id;
+            unregisterParticipant(participantId);
+        });
+        participant.appendChild(deleteIcon);
+    });
+}
+
+// Call addDeleteIcons after fetching activities
   async function fetchActivities() {
     try {
       const response = await fetch("/activities");
